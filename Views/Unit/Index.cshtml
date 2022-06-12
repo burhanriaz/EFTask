@@ -1,0 +1,56 @@
+﻿@model IEnumerable<EFTask.Models.Unit>
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-info">units </h2>
+    </div>
+    <div class="col-6 text-end">
+        <a class="btn btn-info" asp-action="Create">Add new Unit Type</a>
+    </div>
+    <br />  <br />
+    <div class="col-12">
+        <table class="table table-striped  border">
+            <tr class="table-info">
+                <th class="col-6">
+                    @Html.DisplayNameFor(m=>m.UnitType)
+                </th>
+                <th class="col-6 text-center">
+                    Action
+                <th />
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(m=>item.UnitType)
+                    </td>
+                    @*<td class="text-end" role="group">
+                        <a type="button" class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id"> edit</a>
+                        <form method="post" action="Delete">
+                        <Input onclick="if(!confirm('Are you Sure to Delete')){ return false}" type="submit"  class="btn btn-danger" asp-action="Delete" asp-route-id ="@item.Id" value="Delete" />
+                        </form>
+
+                   <td class=" col-6 align-items-md-center">
+                        <div class=" justify-content-center btn-group " role="group">
+                            <a asp-route-id="@item.Id" asp-action="Edit" type="button" class="btn btn-primary">
+                                <i class="fas fa-pen-to-square"></i>&nbsp;Edit
+                            </a>
+                            &nbsp;
+                            <form method="post" action="Delete">
+                                <a asp-route-id="@item.Id" asp-action="Edit" type="button" onclick="if(!confirm('Are you Sure to Delete')){ return false}"  class="btn btn-danger">
+                                    <i class="fas fa-trash-alt"></i>&nbsp;Delete
+                                </a>
+                               <input onclick="if(!confirm('Are you Sure to Delete')){ return false}" type="submit" class="fas fa-trash-alt" value="Delete" asp-route-id="@item.Id" asp-action="Delete" class="btn btn-danger" />
+                        *  </form>
+                        </div>
+                    </td>*@
+                  
+                    <partial name="_TableButtonPartial" model="item.UnitId"/>
+
+                        
+                
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>

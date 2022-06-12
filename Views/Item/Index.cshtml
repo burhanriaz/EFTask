@@ -1,0 +1,92 @@
+﻿@model IEnumerable<EFTask.Models.ViewModel.ItemViewModel>
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-info">Item </h2>
+    </div>
+    <div class="col-6 text-end">
+        <a class="btn btn-info" asp-action="Create">Add new Item</a>
+    </div>
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+                <input type="submit" value="Search" class="btn btn-default" /> |
+                <a asp-action="Index">Back to Full List</a>
+            </p>
+        </div>
+    </form>
+
+    <div class="col-12">
+        <table class="table table-striped  border">
+            <tr class="table-info">
+                <th >
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["ItemNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Item Name</a>
+               
+                </th>
+                <th >
+                    @Html.DisplayNameFor(m=>m.Description)
+                </th>
+                <th >
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Price</a>
+                </th>
+                <th >
+                    @Html.DisplayNameFor(m=>m.UnitType)
+                </th>
+                  <th >
+                    @Html.DisplayNameFor(m=>m.Imgurl)
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.ItemName
+                    </td>
+                    <td>
+                        @item.Description
+                    </td>
+                    <td>
+                        @item.Price
+                    </td>
+                      <td>
+                        @item.UnitType
+                    </td>
+                    <td>
+                        @item.Imgurl
+                    </td>
+                  
+
+                    @*<td class="text-end" role="group">
+                        <a type="button" class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id"> edit</a>
+                        <form method="post" action="Delete">
+                        <Input onclick="if(!confirm('Are you Sure to Delete')){ return false}" type="submit"  class="btn btn-danger" asp-action="Delete" asp-route-id ="@item.Id" value="Delete" />
+                        </form>
+
+                        <td class=" col-6 align-items-md-center">
+                        <div class=" justify-content-center btn-group " role="group">
+                        <a asp-route-id="@item.Id" asp-action="Edit" type="button" class="btn btn-primary">
+                        <i class="fas fa-pen-to-square"></i>&nbsp;Edit
+                        </a>
+                        &nbsp;
+                        <form method="post" action="Delete">
+                        <a asp-route-id="@item.Id" asp-action="Edit" type="button" onclick="if(!confirm('Are you Sure to Delete')){ return false}"  class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i>&nbsp;Delete
+                        </a>
+                        <input onclick="if(!confirm('Are you Sure to Delete')){ return false}" type="submit" class="fas fa-trash-alt" value="Delete" asp-route-id="@item.Id" asp-action="Delete" class="btn btn-danger" />
+                        *  </form>
+                        </div>
+                        </td>*@
+
+                    <partial name="_TableButtonPartial" model="item.ItemId" />
+
+
+
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>

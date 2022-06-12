@@ -1,0 +1,18 @@
+﻿@model List<int>
+
+<td>
+
+    <div class="btn-group" role="group">
+        <form method="post" asp-action="Create">
+            <input asp-for="@Model[0]" type="hidden" />
+            <input asp-for="@Model[1]" type="hidden" />
+
+            <input name="Quantity"  type="number" min="1" step="1" style="width:80px; height:30px" />
+            <br />
+            <button   class="btn btn-success" onclick="if(!confirm('Are you Sure to Order')){ return false}" type="submit">
+                <i class="fas fa-trash-alt"></i>&nbsp;Order
+            </button>
+
+        </form>
+    </div>
+</td>

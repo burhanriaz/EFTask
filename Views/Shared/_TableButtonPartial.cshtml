@@ -1,0 +1,15 @@
+﻿@model int
+
+<td class="align-items-md-center">
+    <div class="btn-group" role="group">
+        <a asp-route-id="@Model" asp-action="Edit" type="button" class="btn btn-primary">
+            <i class="fas fa-pen-to-square"></i>&nbsp;Edit
+        </a>
+        &nbsp;
+        <form method="post" asp-action="Delete">
+            <button  asp-action="Delete"  asp-route-id="@Model" class="btn btn-danger" onclick="if(!confirm('Are you Sure to Delete')){ return false}" type="submit">
+             <i class="fas fa-trash-alt"></i>&nbsp;Delete
+            </button>
+        </form>
+    </div>
+</td>
