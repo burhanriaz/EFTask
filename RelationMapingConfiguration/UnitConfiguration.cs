@@ -8,12 +8,12 @@ namespace EFTask.RelationMapingConfiguration
     {
         public void Configure(EntityTypeBuilder<Unit> builder)
         {
-
-            builder.ToTable("Unit");
-
+            builder.ToTable("Unit").HasIndex(e=>e.UnitType).IsUnique();
             builder.Property(e => e.UnitType)
-            .IsRequired(true)
-            .HasMaxLength(50);
+                .IsRequired(true)
+                 .HasMaxLength(50);
+
+           
         }
     }
 }

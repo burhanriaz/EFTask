@@ -12,6 +12,7 @@ namespace EFTask.RelationMapingConfiguration
             builder.Property(e => e.Name)
                            .IsRequired(true)
                            .HasMaxLength(50);
+           
 
             builder.Property(e => e.Price)
                            .IsRequired(true)

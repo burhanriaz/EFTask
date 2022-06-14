@@ -9,12 +9,12 @@ namespace EFTask.Models
         public int? ItemId { get; set; }
         [Required(ErrorMessage ="Provide Name")]
         public string Name { get; set; }
-        public string Description { get; set; }
 
         [Required(ErrorMessage = "Provide Price")]
         public decimal Price { get; set; } 
-        public string Imgurl { get; set; }
 
         public  ICollection<UnitItem> UnitItems { get;  set; }=new HashSet<UnitItem>();
+        public virtual ICollection<OrderedItem> OrderedItems { get; set; } = new List<OrderedItem>();
+
     }
 }

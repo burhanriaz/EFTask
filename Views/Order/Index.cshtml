@@ -5,6 +5,10 @@
     </div>
     <div class="col-6 text-end">
         <a class="btn btn-info" asp-action="Create">Order </a>
+        <a class="btn btn-info" asp-action="CreateOrder">Order </a>
+
+        <a class="btn btn-info" asp-action="Edit">Edit Order </a>
+
     </div>
         <form asp-action="Index" method="get">
         <div class="form-actions no-color">
@@ -16,6 +20,7 @@
         </div>
     </form>
     <br /> 
+  
     <form method="post" action="Create" class="col-12">
         <div class="col-12">
             <table class="table table-striped  border">
@@ -24,9 +29,7 @@
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["ItemNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Item Name</a>
 
                     </th>
-                    <th>
-                        @Html.DisplayNameFor(m=>m.Description)
-                    </th>
+                  
 
                     @* <th class="col-6">
 
@@ -39,9 +42,7 @@
                     @*  <th class="col-6">
                         @Html.DisplayNameFor(m=>m.Price)
                         </th>*@
-                    <th>
-                        @Html.DisplayNameFor(m=>m.Imgurl)
-                    </th>
+                  
                     <th>
                         @Html.DisplayNameFor(m=>m.UnitType)
                     </th>
@@ -58,16 +59,12 @@
                         <td>
                             @Html.DisplayFor(m=>item.ItemName)
                         </td>
-                        <td>
-                            @Html.DisplayFor(m=>item.Description)
-                        </td>
+                     
                         <td>
                             @Html.DisplayFor(m=>item.Price)
                         </td>
 
-                        <td>
-                            @Html.DisplayFor(m=>item.Imgurl)
-                        </td>
+                      
                         <td>
                             @Html.DisplayFor(m=>item.UnitType)
                         </td>

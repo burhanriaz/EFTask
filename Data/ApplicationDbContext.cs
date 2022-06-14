@@ -34,19 +34,6 @@ namespace EFTask.Data
             //modelBuilder.ApplyConfiguration(new UnitConfiguration());
             //modelBuilder.ApplyConfiguration(new UnitItemMapping());
 
-
-
-            //        modelBuilder.Entity<Grade>()
-            //.HasMany<Student>(g => g.Students)
-            //.WithOne(s => s.Grade)
-            //.HasForeignKey(s => s.CurrentGradeId);
-
-            //        modelBuilder.Entity<Grade>()
-            //            .HasMany<Student>(g => g.Students)
-            //            .WithOne(s => s.Grade)
-            //            .HasForeignKey(s => s.CurrentGradeId)
-            //            .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

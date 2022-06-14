@@ -22,15 +22,11 @@
                         @Html.DisplayNameFor(m=>m.Items)
 
                     </th>
-                    <th class="col-6">
-                        @Html.DisplayNameFor(m=>m.Description)
-                    </th>
+                 
                     <th class="col-6">
                         @Html.DisplayNameFor(m=>m.Price)
                     </th>
-                    <th class="col-6">
-                        @Html.DisplayNameFor(m=>m.Imgurl)
-                    </th>
+                  
                     <th class="col-6">
                         @Html.DisplayNameFor(m=>m.UnitType)
                     </th>
@@ -50,22 +46,21 @@
                             </td> *@
                         <td>
                             <input type="hidden" name="ItemId" asp-for="@item.ItemId" />@item.ItemId
+                            <input type="hidden" name="OrderId" asp-for="@item.OrderId" /> 
+                            <input type="hidden" name="UnitId" asp-for="@item.UnitId" /> 
+
                         </td>
                         <td>
                             @*@Html.DisplayFor(m=>item.ItemName)*@
                             <input name="ItemName" asp-for="@item.ItemName" disabled value="@item.ItemName" />
                         </td>
-                        <td>
-                            @Html.DisplayFor(m=>item.Description)
-                        </td>
+                     
                         <td>
 
                             <input name="Price" asp-for="@item.Price" disabled value="@item.Price" />
                         </td>
 
-                        <td>
-                            @Html.DisplayFor(m=>item.Imgurl)
-                        </td>
+                       
                         <td>
                             @*@Html.DisplayFor(m=>item.UnitType)*@
                             <input name="UnitType" asp-for="@item.UnitType" disabled value="@item.UnitType" />
@@ -83,17 +78,11 @@
                 }
             </table>
         </div>
-       
-
-
         <input id="OrderName" name="OrderName"  asp-asp-for="@Model" class="btn" style="width:80px; height:30px" />
-
         <input name="submit" type="submit" style="width:200px" value="Order" class="btn btn-success" />
     </form>
 
 </div>
-
-
 @section Scripts{
 <script>
     $(function () {
@@ -110,10 +99,11 @@
 
                 //using find method to find element from current row, and then get the value.
                 model.ItemId = $(tr).find("input[name='ItemId']").val();
+                model.OrderId = $(tr).find("input[name='OrderId']").val();
+                model.UnitId = $(tr).find("input[name='UnitId']").val();
                 model.ItemName = $(tr).find("input[name='ItemName']").val();
                 model.Price = $(tr).find("input[name='Price']").val();
                 model.UnitType = $(tr).find("input[name='UnitType']").val();
-                model.Description = $(tr).find("input[name='Description']").val();
                 model.Quantity = $(tr).find("input[name='Quantity']").val();
                 model.OrderName = $(tr).find("input[name='OrderName']").val();
 

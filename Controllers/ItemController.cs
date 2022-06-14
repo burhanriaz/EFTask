@@ -44,9 +44,7 @@ namespace EFTask.Controllers
                              UnitId = unit.UnitId,
                              UnitType = unit.UnitType,
                              ItemName = item.Name,
-                             Description = item.Description,
                              Price = item.Price,
-                             Imgurl = item.Imgurl,
                          });
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -92,17 +90,12 @@ namespace EFTask.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ItemUnitVM model)
         {
-            ModelState.Remove("model.Unit");
-
-            if (ModelState.IsValid)
-            {
+            //ModelState.Remove("model.Unit");
 
                 var item = new Item
                 {
                     Name = model.Item.Name,
                     Price = model.Item.Price,
-                    Description = model.Item.Description,
-                    Imgurl = model.Item.Imgurl,
                 };
                 var unit = model.Unit.Where(x => x.Selected).Select(y => y.Value).ToList();
                 foreach (var i in unit)
@@ -114,13 +107,14 @@ namespace EFTask.Controllers
 
 
                 }
-                //var unitItem = 
-                //item.UnitItems.Add(unitItem);
+        
+            if (ModelState.IsValid)
+            {
                 await _dbContext.AddAsync(item);
                 await _dbContext.SaveChangesAsync();
                 return RedirectToAction("Index");
-
             }
+           
             return RedirectToAction("Index");
         }
 
@@ -175,8 +169,6 @@ namespace EFTask.Controllers
            // item.ItemId = model.Item.ItemId;
             item.Name = model.Item.Name;
             item.Price = model.Item.Price;
-            item.Description = model.Item.Description;
-            item.Imgurl = model.Item.Imgurl;
 
 
             var existingunitID = item.UnitItems.Select(x => x.UnitId).ToList();

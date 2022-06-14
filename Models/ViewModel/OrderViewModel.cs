@@ -16,18 +16,20 @@ namespace EFTask.Models.ViewModel
 
        
         public int? UnitId { get; set; }
+
         public string UnitType { get; set; }
 
-        public int OrderId { get; set; }
+        public int? OrderId { get; set; }
         public decimal TotalPrice { get; set; }
 
 
 
+        
+
         public int? ItemId { get; set; }
+        public decimal Sub_Total { get; set; }
         public string ItemName { get; set; }
-        public string Description { get; set; }
         public decimal Price { get; set; }
-        public string Imgurl { get; set; }
         public int Quantity { get; set; }
 
 

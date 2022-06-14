@@ -23,18 +23,14 @@
                     <a asp-action="Index" asp-route-sortOrder="@ViewData["ItemNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Item Name</a>
                
                 </th>
-                <th >
-                    @Html.DisplayNameFor(m=>m.Description)
-                </th>
+             
                 <th >
                     <a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Price</a>
                 </th>
                 <th >
                     @Html.DisplayNameFor(m=>m.UnitType)
                 </th>
-                  <th >
-                    @Html.DisplayNameFor(m=>m.Imgurl)
-                </th>
+               
                 <th>
                     Action
                 </th>
@@ -45,18 +41,14 @@
                     <td>
                         @item.ItemName
                     </td>
-                    <td>
-                        @item.Description
-                    </td>
+                 
                     <td>
                         @item.Price
                     </td>
                       <td>
                         @item.UnitType
                     </td>
-                    <td>
-                        @item.Imgurl
-                    </td>
+                  
                   
 
                     @*<td class="text-end" role="group">

@@ -1,0 +1,24 @@
+﻿@model EFTask.Models.Order
+
+<h1>
+    Edit Order Name<h1>
+        <form method="post" action="EditOrder">
+            <input hidden asp-for="OrderId" />
+            <div class=" row">
+                <div class=" col-12">
+                    <div class="col-2">
+                        <label asp-for="OrderName"></label>
+                    </div>
+                    <div class="col-4">
+                        <input type="text" asp-for="OrderName" class="form-control" />
+                        <span asp-validation-for="OrderName" class="text-danger"></span>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group mt-4">
+                            <input type="submit" class="btn btn-primary" @* asp-for="Item.Name"*@ value="Update" />
+                            <a asp-action="IndexOrder" class="btn btn-danger">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>

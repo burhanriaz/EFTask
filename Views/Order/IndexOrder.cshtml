@@ -1,0 +1,70 @@
+﻿@model IEnumerable< EFTask.Models.Order>
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-info">Items</h2>
+    </div>
+    <div class="col-6">       
+        <a class="btn btn-info" asp-action="CreateOrder"> Create Order </a> 
+    </div>
+        <form asp-action="IndexOrder" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+                <input type="submit" value="Search" class="btn btn-default" /> |
+                <a asp-action="IndexOrder">Back to Full List</a>
+            </p>
+        </div>
+    </form>
+    <br /> 
+
+        <div class="col-12">
+            <table class="table table-striped  border">
+                <tr class="table-info">
+                    <th>
+                    Order ID
+                   </th>
+                    <th>
+                        <a asp-action="IndexOrder" asp-route-sortOrder="@ViewData["OrderNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Order Name</a>
+
+                    </th>
+                 
+                    <th>
+                        <a asp-action="IndexOrder" asp-route-sortOrder="@ViewData["PriceSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Total Price</a>
+                    </th>
+                    <th>
+                        <a asp-action="IndexOrder" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Date</a>
+                    </th
+            
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(m=>item.OrderId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m=>item.OrderName)
+                        </td>
+                    
+                        <td>
+                            @Html.DisplayFor(m=>item.TotalPrice)
+                        </td>     
+                        
+                         <td>
+                            @Html.DisplayFor(m=>item.OrderDate)
+                        </td>  
+                         <td>
+                             <partial name="_TableButtonOrderPartial" model="@item.OrderId" />
+
+                        </td> 
+                    
+                    </tr>
+                }
+            </table>
+        </div>
+  
+   
+</div>

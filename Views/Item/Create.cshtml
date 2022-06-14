@@ -14,13 +14,7 @@
             <input type="text" asp-for="Item.Name" class="form-control" />
             <span asp-validation-for="Item.Name" class="text-danger"></span>
         </div>
-        <div class="col-2">
-            <label asp-for="Item.Description"></label>
-        </div>
-        <div class="col-4">
-            <input type="text" asp-for="Item.Description" class="form-control" />
-            <span asp-validation-for="Item.Description" class="text-danger"></span>
-        </div>
+       
         <div class="col-2">
             <label asp-for="Item.Price"></label>
         </div>
@@ -28,15 +22,6 @@
             <input type="text" asp-for="Item.Price" class="form-control" />
             <span asp-validation-for="Item.Price" class="text-danger"></span>
         </div>
-
-        <div class="col-2">
-            <label asp-for="Item.Imgurl"></label>
-        </div>
-        <div class="col-4">
-            <input type="text" asp-for="Item.Imgurl" class="form-control" />
-            <span asp-validation-for="Item.Imgurl" class="text-danger"></span>
-        </div>
- 
         
                @for (int i = 0; i < Model.Unit.Count(); i++)
         {

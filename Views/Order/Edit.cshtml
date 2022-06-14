@@ -1,0 +1,145 @@
+﻿
+@model IEnumerable<EFTask.Models.ViewModel.OrderViewModel>
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-info">Items</h2>
+    </div>
+    <div class="col-6 text-end">
+        @* <a class="btn btn-info" asp-action="Create">Add new Item</a>*@
+    </div>
+    <br />  <br />
+    <form method="post" action="Create" class="col-12" id="OrderForm">
+        <div class="col-12">
+            <table class="table table-striped  border" id="tblOrders">
+                <tr class="table-info">
+                    <th class="col-6">
+
+                        @Html.DisplayNameFor(m=>m.ItemId)
+
+                    </th>
+
+                    <th class="col-6">
+
+                        @Html.DisplayNameFor(m=>m.Items)
+
+                    </th>
+                   
+                    <th class="col-6">
+                        @Html.DisplayNameFor(m=>m.Price)
+                    </th>
+                 
+                    <th class="col-6">
+                        @Html.DisplayNameFor(m=>m.UnitType)
+                    </th>
+                       <th class="col-6">
+                        @Html.DisplayNameFor(m=>m.Sub_Total)
+                    </th>
+                    </th>
+                       <th class="col-6">
+                        @Html.DisplayNameFor(m=>m.TotalPrice)
+                    </th>
+                    @* <th class="col-6">
+                        Quantity
+                        </th>*@
+                    <th class="col-6 text-center">
+                        Select To Order
+                    <th />
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @*  <td>
+                            @Html.DisplayFor(m=>item.ItemId)
+                            @*    <input type="hidden" name="ItemId" asp-for="@item.ItemId" />@item.ItemId
+                            </td> *@
+                        <td>
+                            <input type="hidden" name="ItemId" asp-for="@item.ItemId" />@item.ItemId
+                        </td>
+                        <td>
+                            @*@Html.DisplayFor(m=>item.ItemName)*@
+                            <input name="ItemName" asp-for="@item.ItemName" disabled value="@item.ItemName" />
+                        </td>
+                       
+                        <td>
+
+                            <input name="Price" asp-for="@item.Price" disabled value="@item.Price" />
+                        </td>
+
+                   
+                        <td>
+                        @Html.DisplayNameFor(m=>item.Sub_Total)
+
+                        </td>
+                         <td>
+                        @Html.DisplayNameFor(m=>item.TotalPrice)
+
+                        </td>
+                        <td>
+                            @*@Html.DisplayFor(m=>item.UnitType)*@
+                            <input name="UnitType" asp-for="@item.UnitType" disabled value="@item.UnitType" />
+                        </td>
+                        <td>
+
+                            <input id="Quantity" name="Quantity" asp-for="@item.Quantity" value="@item.Quantity" type="number" min="1" step="1" class="btn btn-success" style="width:80px; height:30px" />
+                        </td>
+                        <td>
+
+                            <input name="checkbox" id="checkboxn" type="checkbox" class="btn btn-success" style="width:40px; height:30px" />
+                        </td>
+
+                    </tr>
+                }
+            </table>
+        </div>
+       
+
+
+        <input id="OrderName" name="OrderName"  asp-asp-for="@Model" class="btn" style="width:80px; height:30px" />
+
+        <input name="submit" type="submit" style="width:200px" value="Order" class="btn btn-success" />
+    </form>
+
+</div>
+
+
+@section Scripts{
+<script>
+    $(function () {
+        $(':submit').click(function (event) {
+            event.preventDefault();
+            //define an array to store the selected AddQuestionViewModel list.
+            var selectedModel = [];
+            //loop through all checked checkbox.
+            $("input[type='checkbox']:checked").each(function (index, item) {
+                //get current row
+                var tr = $(item).closest('tr');
+                //define an object to store the AddQuestionViewModel information.
+                var model = new Object();
+
+                //using find method to find element from current row, and then get the value.
+                model.ItemId = $(tr).find("input[name='ItemId']").val();
+                model.ItemName = $(tr).find("input[name='ItemName']").val();
+                model.Price = $(tr).find("input[name='Price']").val();
+                model.UnitType = $(tr).find("input[name='UnitType']").val();
+                model.Description = $(tr).find("input[name='Description']").val();
+                model.Quantity = $(tr).find("input[name='Quantity']").val();
+                model.OrderName = $(tr).find("input[name='OrderName']").val();
+
+
+                selectedModel.push(model);
+            });
+            var frm = $('#OrderForm');
+            $.ajax({
+                url: frm.attr('Create'),
+                method: "POST",
+                data: { orderViewModels: selectedModel },
+            }).done(function (response) {
+                window.location.href = response.redirectToUrl;
+            });
+
+        });
+    });
+</script>
+}
+
+

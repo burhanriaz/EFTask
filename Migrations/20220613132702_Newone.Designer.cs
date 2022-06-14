@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFTask.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220610103214_firstl")]
-    partial class firstl
+    [Migration("20220613132702_Newone")]
+    partial class Newone
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,16 +23,10 @@ namespace EFTask.Migrations
 
             modelBuilder.Entity("EFTask.Models.Item", b =>
                 {
-                    b.Property<int?>("ItemId")
+                    b.Property<int>("ItemId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Imgurl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -57,6 +51,13 @@ namespace EFTask.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("OrderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("OrderId");
 
                     b.ToTable("Orders");
@@ -64,12 +65,13 @@ namespace EFTask.Migrations
 
             modelBuilder.Entity("EFTask.Models.OrderedItem", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
                     b.Property<int>("OrderId_FK")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemId_Fk")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -79,17 +81,17 @@ namespace EFTask.Migrations
                     b.Property<decimal>("Sub_Total")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("UnitItemIdFK")
+                    b.Property<int>("UnitID_Fk")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("OrderId_FK");
+                    b.HasKey("OrderId_FK", "ItemId_Fk");
 
-                    b.HasIndex("UnitItemIdFK");
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("UnitId");
 
                     b.ToTable("OrderedItems");
                 });
@@ -108,25 +110,21 @@ namespace EFTask.Migrations
 
                     b.HasKey("UnitId");
 
+                    b.HasIndex("UnitType")
+                        .IsUnique();
+
                     b.ToTable("Unit");
                 });
 
             modelBuilder.Entity("EFTask.Models.UnitItem", b =>
                 {
-                    b.Property<int>("UnitItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
                     b.Property<int>("UnitId")
                         .HasColumnType("int");
 
-                    b.HasKey("UnitItemId");
-
-                    b.HasIndex("ItemId");
+                    b.HasKey("ItemId", "UnitId");
 
                     b.HasIndex("UnitId");
 
@@ -135,21 +133,25 @@ namespace EFTask.Migrations
 
             modelBuilder.Entity("EFTask.Models.OrderedItem", b =>
                 {
+                    b.HasOne("EFTask.Models.Item", "Item")
+                        .WithMany("OrderedItems")
+                        .HasForeignKey("ItemId");
+
                     b.HasOne("EFTask.Models.Order", "Order")
                         .WithMany("OrderItem")
                         .HasForeignKey("OrderId_FK")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFTask.Models.UnitItem", "UnitItem")
-                        .WithMany("OrderItem")
-                        .HasForeignKey("UnitItemIdFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("EFTask.Models.Unit", "unit")
+                        .WithMany("OrderedItems")
+                        .HasForeignKey("UnitId");
+
+                    b.Navigation("Item");
 
                     b.Navigation("Order");
 
-                    b.Navigation("UnitItem");
+                    b.Navigation("unit");
                 });
 
             modelBuilder.Entity("EFTask.Models.UnitItem", b =>
@@ -173,6 +175,8 @@ namespace EFTask.Migrations
 
             modelBuilder.Entity("EFTask.Models.Item", b =>
                 {
+                    b.Navigation("OrderedItems");
+
                     b.Navigation("UnitItems");
                 });
 
@@ -183,12 +187,9 @@ namespace EFTask.Migrations
 
             modelBuilder.Entity("EFTask.Models.Unit", b =>
                 {
-                    b.Navigation("UnitItems");
-                });
+                    b.Navigation("OrderedItems");
 
-            modelBuilder.Entity("EFTask.Models.UnitItem", b =>
-                {
-                    b.Navigation("OrderItem");
+                    b.Navigation("UnitItems");
                 });
 #pragma warning restore 612, 618
         }
