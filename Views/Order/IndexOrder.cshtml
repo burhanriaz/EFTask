@@ -20,9 +20,7 @@
         <div class="col-12">
             <table class="table table-striped  border">
                 <tr class="table-info">
-                    <th>
-                    Order ID
-                   </th>
+                 
                     <th>
                         <a asp-action="IndexOrder" asp-route-sortOrder="@ViewData["OrderNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Order Name</a>
 
@@ -33,18 +31,22 @@
                     </th>
                     <th>
                         <a asp-action="IndexOrder" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Date</a>
-                    </th
-            
-                    <th>
+                    </th>            
+                    <th class="text-right">
                         Actions
                     </th>
+                      <th class="text-right">
+                       
+                    </th>
+                      <th class="text-right">
+                       
+                    </th>
+                  
                 </tr>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
-                            @Html.DisplayFor(m=>item.OrderId)
-                        </td>
+                       
                         <td>
                             @Html.DisplayFor(m=>item.OrderName)
                         </td>

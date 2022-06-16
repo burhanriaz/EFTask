@@ -172,6 +172,7 @@ namespace EFTask.Controllers
 
         }
 
+
         [HttpGet]
         public async Task<IActionResult> AddOrderItems(int? id)
         {
@@ -194,150 +195,205 @@ namespace EFTask.Controllers
                          }).ToList();
 
             return View(items);
-            //  return RedirectToAction("Index");
+           
         }
 
-
-        [HttpPost]
-        public async Task<IActionResult> AddOrderItems(List<OrderViewModel> orderViewModels, int? id)
-        {
-            var orderID = orderViewModels.Select(x => x.OrderId).FirstOrDefault();
-            var model = await _dbContext.Orders.FindAsync(orderID);
-            //{
-            //    OrderDate = DateTime.UtcNow,
-            //    OrderName = "Burhan"  /*orderViewModels.Select(Order => Order.OrderName).FirstOrDefault().ToString(),*/
-            //};
-            var checkQuantity = orderViewModels.Select(x => x.Quantity).ToList();
-            var CheckSelectedItem = orderViewModels.Select(x => x.ItemId).Count();
-
-            if (checkQuantity is not null && CheckSelectedItem > 0 && orderID > 0)
-            {
-                foreach (var item in orderViewModels)
-                {
-                    // var UnitItemID = _dbContext.UnitItems.Where(x => x.ItemId == item.ItemId).FirstOrDefault();
-
-                    if (item.Quantity > 0)
-                    {
-                        var orderItem = new OrderedItem()
-                        {
-                            ItemId_Fk = item.ItemId,
-                            UnitId_Fk = item.UnitId,
-                            Quantity = item.Quantity,
-                            Sub_Total = item.Price * item.Quantity,
-                            OrderId_FK = item.OrderId,
-                        };
-                        model.TotalPrice += item.Price * item.Quantity;
-                        _dbContext.Update(model);
-
-                        await _dbContext.AddAsync(orderItem);
-                    }
-                }
-                await _dbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(IndexOrder));
-            }
-            //return RedirectToAction("CreateOrder");
-            return RedirectToAction(nameof(IndexOrder));
-
-        }
-
-
+        ///////////////////////////////////////////////////////////////////////
+        // Add new to buy items
         [HttpGet]
-        public async Task<IActionResult> EditOrderItems( int? id)
+        public async Task<IActionResult> BuyItems(int? id)
         {
-
-            if (id is null || id == 0)
+            if (id is null)
             {
-                return NotFound("Result Not found");
+                return NotFound("Please Create Order first!!!");
             }
+            var items = (from item in _dbContext.Items
 
-            var items = (from item in _dbContext.Orders
-
-                         join OrderedItem in _dbContext.OrderedItems on item.OrderId equals OrderedItem.ItemId_Fk
-                         //join UnitItems in _dbContext.UnitItems on OrderedItems. equals UnitItems.ItemId
-                         join unit in _dbContext.Units on OrderedItem.UnitId_Fk equals unit.UnitId
-                         join Item in _dbContext.Items on OrderedItem.ItemId_Fk equals Item.ItemId
+                         join ItemUnit in _dbContext.UnitItems on item.ItemId equals ItemUnit.ItemId
+                         join unit in _dbContext.Units on ItemUnit.UnitId equals unit.UnitId
                          select new OrderViewModel
                          {
-                             ItemId = Item.ItemId,
-                             ItemName = Item.Name,
-
-                             OrderId = item.OrderId,
-                             OrderName = item.OrderName,
-
+                             ItemId = item.ItemId,
                              UnitId = unit.UnitId,
                              UnitType = unit.UnitType,
-
-                             Sub_Total = OrderedItem.Sub_Total,
-                             Price = Item.Price,
-                             Quantity = OrderedItem.Quantity,
-                             TotalPrice = item.TotalPrice,
-
+                             ItemName = item.Name,
+                             Price = item.Price,
+                             OrderId = id
 
                          }).ToList();
 
             return View(items);
         }
         [HttpPost]
-        public async Task<IActionResult> EditOrderItems(List<OrderViewModel> orderViewModels, int? id)
+        public async Task<IActionResult> BuyItems(OrderViewModel orderViewModels, int? id)
         {
-
-            var orderID = orderViewModels.Select(x => x.OrderId).FirstOrDefault();
+            var orderID = orderViewModels.OrderId;
             var model = await _dbContext.Orders.FindAsync(orderID);
-            //{
-            //    OrderDate = DateTime.UtcNow,
-            //    OrderName = "Burhan"  /*orderViewModels.Select(Order => Order.OrderName).FirstOrDefault().ToString(),*/
-            //};
-            var checkQuantity = orderViewModels.Select(x => x.Quantity).ToList();
-            var CheckSelectedItem = orderViewModels.Select(x => x.ItemId).Count();
 
-            if (checkQuantity is not null && CheckSelectedItem > 0 && orderID > 0)
+
+            if (orderViewModels.Quantity > 0 && orderViewModels.ItemId > 0 && orderID > 0)
             {
-                foreach (var item in orderViewModels)
+                var price = await _dbContext.Items.FindAsync(orderViewModels.ItemId);
+
+                var orderedItem = await _dbContext.OrderedItems.FindAsync(orderID, orderViewModels.ItemId);
+                if (orderedItem == null)
                 {
-                    var models = _dbContext.OrderedItems.Where(x => x.ItemId_Fk == item.ItemId).FirstOrDefault();
-
-                    if (item.Quantity > 0)
+                    var orderItem = new OrderedItem()
                     {
-                        var orderItem = new OrderedItem()
-                        {
-                            ItemId_Fk = item.ItemId,
-                            UnitId_Fk = item.UnitId,
-                            Quantity = item.Quantity,
-                            Sub_Total = item.Price * item.Quantity,
-                            OrderId_FK = item.OrderId,
-                        };
-                        model.TotalPrice += item.Price * item.Quantity;
-                        _dbContext.Update(model);
-
+                        ItemId_Fk = orderViewModels.ItemId,
+                        UnitId_Fk = orderViewModels.UnitId,
+                        Quantity = orderViewModels.Quantity,
+                        Sub_Total = price.Price * orderViewModels.Quantity,
+                        OrderId_FK = orderViewModels.OrderId,
+                    };
+                    model.TotalPrice += orderItem.Sub_Total;
+                    _dbContext.Update(model);
+                    if (ModelState.IsValid)
+                    {
                         await _dbContext.AddAsync(orderItem);
-                    }
-                    else if (item.Quantity ==0)
-                    {
-                        //var orderItem = new OrderedItem()
-                        //{
-                        //    ItemId_Fk = item.ItemId,
-                        //    UnitId_Fk = item.UnitId,
-                        //    Quantity = item.Quantity,
-                        //    Sub_Total = item.Price * item.Quantity,
-                        //    OrderId_FK = item.OrderId,
-                        //};
-                        model.TotalPrice -= item.Price * item.Sub_Total;
-                        _dbContext.Remove(model);
-
-                        //await _dbContext.AddAsync(orderItem);
+                        await _dbContext.SaveChangesAsync();
                     }
                 }
-                await _dbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(IndexOrder));
+                else
+                {
+                    // orderedItem.ItemId_Fk = orderViewModels.ItemId;
+                    orderedItem.UnitId_Fk = orderViewModels.UnitId;
+                    orderedItem.Quantity += orderViewModels.Quantity;
+                    orderedItem.Sub_Total += price.Price * orderViewModels.Quantity;
+                    model.TotalPrice += price.Price * orderViewModels.Quantity;
+                    _dbContext.Update(model);
+                    if (ModelState.IsValid)
+                    {
+                        _dbContext.Update(orderedItem);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                };
+                return RedirectToRoute(orderID);
+
             }
-            return RedirectToAction("IndexOrder");
-            return RedirectToAction(nameof(IndexOrder));
+            return RedirectToRoute(orderID);
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditOrderItem(int? id)
+        {
+            if (id is null)
+            {
+                return NotFound("Please Create Order first!!!");
+            }
+         
+
+            var order = _dbContext.OrderedItems.ToList();
+           
+            List<OrderViewModel> Ordered = new List<OrderViewModel>();
+
+            foreach (var item in order)
+            {
+                if(item.OrderId_FK==id)
+                {
+                    
+                    var units = _dbContext.Units.Where(x => x.UnitId == item.UnitId_Fk).FirstOrDefault();
+                    var ItemName = _dbContext.Items.Where(x => x.ItemId == item.ItemId_Fk).FirstOrDefault();
+
+                    var x = new OrderViewModel()
+                    {
+                        ItemId = item.ItemId_Fk,
+                        UnitId = item.UnitId_Fk,
+                        UnitType = units.UnitType,
+                        ItemName = ItemName.Name,
+                        Price = ItemName.Price,
+                        Quantity = item.Quantity,
+                        Sub_Total = item.Sub_Total,
+                        OrderId = id,
+                    };
+                    Ordered.Add(x);
+                }
+            }
+            //var che= from order in _dbContext.OrderedItems
+                //var f=  _dbContext.OrderedItems.Select(id).FirstOrDefault();
+            //var items = (from item in _dbContext.OrderedItems
+
+            //             join Item in _dbContext.Items on item.ItemId_Fk equals Item.ItemId
+            //             join unit in _dbContext.Units on item.UnitId_Fk equals unit.UnitId
+            //             select new OrderViewModel
+            //             {
+            //                 ItemId = item.ItemId_Fk,
+            //                 UnitId = unit.UnitId,
+            //                 UnitType = unit.UnitType,
+            //                 ItemName = item.Item.Name,
+            //                 Price = Item.Price,
+            //                 Quantity = item.Quantity,
+            //                 Sub_Total = item.Sub_Total,
+            //                 OrderId = id
+
+            //             }).ToList();
+
+            return View(Ordered);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> EditOrderItem(OrderViewModel orderViewModels)
+        {
+            var orderID = orderViewModels.OrderId;
+            var model = await _dbContext.Orders.FindAsync(orderID);
+
+
+            if (orderViewModels.Quantity > 0 && orderViewModels.ItemId > 0 && orderID > 0)
+            {
+                var price = await _dbContext.Items.FindAsync(orderViewModels.ItemId);
+
+                var orderedItem = await _dbContext.OrderedItems.FindAsync(orderID, orderViewModels.ItemId);
+                ////  var ItemExist = await _dbContext.OrderedItems.FindAsync(orderViewModels.ItemId);
+                if (orderedItem != null)
+                {
+                    decimal price_to_sub = orderedItem.Sub_Total;
+
+                    orderedItem.ItemId_Fk = orderViewModels.ItemId;
+                    orderedItem.UnitId_Fk = orderViewModels.UnitId;
+                    orderedItem.Quantity = orderViewModels.Quantity;
+                    orderedItem.Sub_Total = price.Price * orderViewModels.Quantity;
+                    orderedItem.OrderId_FK = orderViewModels.OrderId;
+
+                    model.TotalPrice -= price_to_sub;
+                    model.TotalPrice += orderedItem.Sub_Total;
+                    _dbContext.Update(model);
+                    if (ModelState.IsValid)
+                    {
+                        _dbContext.Update(orderedItem);
+                        await _dbContext.SaveChangesAsync();
+                        return RedirectToRoute(orderID);
+                    }
+                }
+                return RedirectToRoute(orderID);
+            }
+            return RedirectToRoute(orderID);
+        }
+        [HttpPost]
+        public async Task<IActionResult> RemoveItem(OrderViewModel orderViewModels)
+        {
+            var model = await _dbContext.Orders.FindAsync(orderViewModels.OrderId);
+            if ( orderViewModels.ItemId > 0 && orderViewModels.OrderId > 0)
+            {
+                var orderedItem = await _dbContext.OrderedItems.FindAsync(orderViewModels.OrderId, orderViewModels.ItemId);
+
+                if (orderedItem != null)
+                {
+                    model.TotalPrice -= orderedItem.Sub_Total;
+                    _dbContext.Update(model);
+                   
+                        _dbContext.Remove(orderedItem);
+                        await _dbContext.SaveChangesAsync();
+                        return RedirectToAction("EditOrderItem",  new { @id = orderViewModels.OrderId });
+                       
+                }
+                return RedirectToAction("EditOrderItem", new { @id = orderViewModels.OrderId });
+
+               
+            }
+            return RedirectToAction("EditOrderItem", new { @id = orderViewModels.OrderId });
 
         }
 
-
-
-            [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Delete(int? Id)
         {
             if (Id is not null)
@@ -352,8 +408,7 @@ namespace EFTask.Controllers
             }
             return NotFound("Record Not Found");
         }
-
-
+ 
 
     }
 }

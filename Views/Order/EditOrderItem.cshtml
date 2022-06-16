@@ -1,0 +1,85 @@
+﻿@model IEnumerable<EFTask.Models.ViewModel.OrderViewModel>
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-info"> Edit Ordered Items</h2>
+    </div>
+    @* <div class="col-6 text-end">
+        <a class="btn btn-info" asp-action="Create">Edit Order</a>
+        </div>*@
+    <br />  <br />
+    <div class="col-12">
+        <table class="table table-striped  border" id="tblOrders">
+            <tr class="table-info">
+                <th class="col-6">
+
+                    @Html.DisplayNameFor(m=>m.Items)
+                </th>
+
+                <th class="col-6">
+                    @Html.DisplayNameFor(m=>m.Price)
+                </th>
+
+                <th class="col-6">
+                    @Html.DisplayNameFor(m=>m.UnitType)
+                </th>
+                  <th class="col-6">
+                    @Html.DisplayNameFor(m=>m.Quantity)
+                </th>
+                  <th class="col-6">
+                    @Html.DisplayNameFor(m=>m.Sub_Total)
+                </th>
+                <th class="col-6 text-center">
+                    Edit Items
+                <th />
+                <th class="col-6 text-center">
+                    Delete Items
+                <th />
+              
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(m=>item.ItemName)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m=>item.Price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m=>item.UnitType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m=>item.Quantity)
+
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(m=>item.Sub_Total)
+
+                    </td>
+                    <td>
+                        <form asp-action="EditOrderItem" asp-controller="Order" method="post" >
+                            <input type="hidden" name="ItemId" asp-for="@item.ItemId" />
+                            <input type="hidden" name="OrderId" asp-for="@item.OrderId" />
+                            <input type="hidden" name="UnitId" asp-for="@item.UnitId" />
+                            <input id="Quantity" name="Quantity" asp-for="@item.Quantity" value="@item.Quantity" type="number" min="1" step="1" class="btn btn-success" style="width:80px; height:30px" />
+                            <input name="submit" type="submit" style="width:200px" value="Update" class="btn btn-success" />
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="RemoveItem" asp-controller="Order" method="post">
+                            <input type="hidden" name="ItemId" asp-for="@item.ItemId" />
+                            <input type="hidden" name="OrderId" asp-for="@item.OrderId" />
+                            <input type="hidden" name="UnitId" asp-for="@item.UnitId" />
+                             <input name="submit" type="submit" style="width:200px" value="Remove" class="btn btn-success" />
+                        </form>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+
+

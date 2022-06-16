@@ -2,18 +2,14 @@
 
 <td class="align-items-md-center">
     <div class="btn-group" role="group">
-       
-         <a asp-route-id="@Model" asp-action="EditOrder" type="button" class="btn btn-info">&nbsp;Edit</a>
-
-          <a asp-route-id="@Model" asp-action="EditOrderItems" type="button" class="btn btn-primary">Edit Order</a>
+        <a asp-route-id="@Model" asp-action="EditOrder" type="button" class="btn btn-info">&nbsp; Edit </a>
+        <a asp-route-id="@Model" asp-action="EditOrderItem" type="button" class="btn btn-primary">Edit Order</a>
         &nbsp;
-           <a asp-route-id="@Model" asp-action="AddOrderItems" type="button" class="btn btn-primary">Add Items
-        </a>
+        <a asp-route-id="@Model" asp-action="BuyItems" type="button" class="btn btn-primary">Buy Items</a>
         &nbsp;
-
         <form method="post" asp-action="Delete">
-            <button  asp-action="Delete"  asp-route-id="@Model" class="btn btn-danger" onclick="if(!confirm('Are you Sure to Delete')){ return false}" type="submit">
-             <i class="fas fa-trash-alt"></i>&nbsp;Delete
+            <button asp-action="Delete" asp-route-id="@Model" class="btn btn-danger" onclick="if(!confirm('Are you Sure to Delete')){ return false}" type="submit">
+                <i class="fas fa-trash-alt"></i>&nbsp;Delete
             </button>
         </form>
     </div>
