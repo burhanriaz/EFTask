@@ -1,36 +1,93 @@
 ﻿<!DOCTYPE html>
+@inject SignInManager<ApplicationUser> _singInManger;
+@inject RoleManager<IdentityRole> _roleManager;
+
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EFTask</title>
+    <environment include="Development">
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+
+    <environment exclude="Development">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EFTask</a>
+                <a class="navbar-brand text-light " asp-area="" asp-controller="Home" asp-action="Index">EFTask</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    <ul class="navbar-nav flex-grow-1 b">
+                        <li class="nav-item ">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Unit" asp-action="Index">Units</a>
-                        </li>
-                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Index">Items</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Unit" asp-action="Index">Units</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="IndexOrder">Order</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Item" asp-action="Index">Items</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Order" asp-action="IndexOrder">Order</a>
+                        </li>
+                        @if (_singInManger.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {
+
+                            <li class="nav-item dropdown ">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownMenuLink"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Manage</a>
+
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-controller="Administrator"
+                                   asp-action="UsersList">Users</a>
+                                    <a class="dropdown-item" asp-controller="Administrator"
+                                   asp-action="RolesList">Roles</a>
+                                </div>
+                            </li>
+                        }
                     </ul>
+                    <ul class="navbar-nav ml-auto">
+
+                        @if (_singInManger.IsSignedIn(User))
+                        {
+                            <li class="nav-item nav-link text-light">
+                                <form asp-action="Logout" asp-controller="Account" method="post">
+                                    <button type="submit" class="nabbar-link btn btn-outline-light" value="Logout" name="Logout">Logout</button>
+                                    @User.Identity.Name
+                                </form>
+                                @*<a class="nav-link text-light" asp-area="" asp-controller="Account" asp-action="Register">Register</a>*@
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nabbar-link btn btn-outline-light mx-2" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nabbar-link btn btn-outline-light" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
             </div>
         </nav>

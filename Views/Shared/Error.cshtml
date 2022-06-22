@@ -2,9 +2,14 @@
 @{
     ViewData["Title"] = "Error";
 }
-
+@if(ViewBag.ErrorTitle is  null)
+{
 <h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<h3>
+    An error occured while processing your request.
+    The support team is notified and we are working on the fix
+</h3>
+<h5>Please contact us on burhanriaz35@gmail.com</h5>
 
 @if (Model.ShowRequestId)
 {
@@ -23,3 +28,9 @@
     For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
     and restarting the app.
 </p>
+}
+else
+{
+    <h1 class="text-danger"> @ViewBag.ErrorTitle</h1>
+    <h6 class="text-danger"> @ViewBag.ErrorMessage</h6>
+}

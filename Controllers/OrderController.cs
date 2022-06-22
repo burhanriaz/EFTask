@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using static EFTask.Models.ViewModel.OrderViewModel;
 using System;
 using EFTask.Models;
+using Microsoft.Extensions.Logging;
 
 namespace EFTask.Controllers
 {
@@ -17,10 +18,13 @@ namespace EFTask.Controllers
 
 
         private readonly ApplicationDbContext _dbContext;
+        public ILogger<AdministratorController> _Logger { get; }
         //  IList<OrderViewModel> sa = new IList<OrderViewModel>();
-        public OrderController(ApplicationDbContext dbCOntext)
+        public OrderController(ApplicationDbContext dbCOntext, ILogger<AdministratorController> Logger)
         {
             _dbContext = dbCOntext;
+            _Logger = Logger;   
+            
         }
         //public async Task<IActionResult> Index(string sortOrder, string searchString)
         //{
@@ -401,10 +405,25 @@ namespace EFTask.Controllers
                 var order = await _dbContext.Orders.FindAsync(Id);
                 if (order != null)
                 {
+                    try 
+                    { 
+
                     _dbContext.Orders.Remove(order);
                     await _dbContext.SaveChangesAsync();
                     return RedirectToAction("IndexOrder");
                 }
+                catch (DbUpdateException ex)
+                {
+                    //Log the exception to a file.
+                    _Logger.LogError($"Exception Occured : {ex}");
+                    // Pass the ErrorTitle and ErrorMessage that you want to show to
+                    // the user using ViewBag. The Error view retrieves this data
+                    // from the ViewBag and displays to the user.
+                    ViewBag.ErrorTitle = $" Order with name {order.OrderName} is in use";
+                    ViewBag.ErrorMessage = $"Order cannot be deleted becaus with this Order {order.OrderName}   buy some items. If you want to delete this Order, please remove the all Items  from the Items and then try to delete";
+                    return View("Error");
+                }
+            }
             }
             return NotFound("Record Not Found");
         }

@@ -2,25 +2,33 @@
 using EFTask.Extentions;
 using EFTask.Models;
 using EFTask.Models.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace EFTask.Controllers
 {
+   // [Authorize]
     public class ItemController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public ItemController(ApplicationDbContext dbCOntext)
+        public ILogger<AdministratorController> _Logger { get; }
+
+        public ItemController(ApplicationDbContext dbCOntext, ILogger<AdministratorController> logger)
         {
             _dbContext = dbCOntext;
+            _Logger = logger;
+
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             ViewData["ItemNameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "ItemName_desc" : "";
@@ -209,9 +217,23 @@ namespace EFTask.Controllers
             var model = await _dbContext.Items.FindAsync(Id);
             if (model != null)
             {
-                _dbContext.Items.Remove(model);
-                await _dbContext.SaveChangesAsync();
-                return RedirectToAction("Index");
+                try
+                {
+                    _dbContext.Items.Remove(model);
+                    await _dbContext.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    //Log the exception to a file.
+                    _Logger.LogError($"Exception Occured : {ex}");
+                    // Pass the ErrorTitle and ErrorMessage that you want to show to
+                    // the user using ViewBag. The Error view retrieves this data
+                    // from the ViewBag and displays to the user.
+                    ViewBag.ErrorTitle = $"{model.Name} Item is in use";
+                    ViewBag.ErrorMessage = $"{model.Name} item cannot be deleted as there are units in this item. If you want to delete this item, please remove the Unit type from the items and then try to delete";
+                    return View("Error");
+                }
             }
             else
                 return NotFound("Record does not exist againt Give Id");

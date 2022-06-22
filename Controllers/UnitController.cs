@@ -2,6 +2,7 @@
 using EFTask.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace EFTask.Controllers
@@ -10,9 +11,13 @@ namespace EFTask.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public UnitController(ApplicationDbContext dbCOntext)
+        public ILogger<AdministratorController> _Logger { get; }
+
+        public UnitController(ApplicationDbContext dbCOntext, ILogger<AdministratorController> logger)
         {
             _dbContext = dbCOntext;
+            _Logger = logger;
+          
         }
 
         [HttpGet]
@@ -83,15 +88,31 @@ namespace EFTask.Controllers
             var model = await _dbContext.Units.FindAsync(Id);
             if (model != null)
             {
-                _dbContext.Units.Remove(model);
-                await _dbContext.SaveChangesAsync();
-                return RedirectToAction("Index");
+                try
+                {
+                    _dbContext.Units.Remove(model);
+                    await _dbContext.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    //Log the exception to a file.
+                    _Logger.LogError($"Exception Occured : {ex}");
+                    // Pass the ErrorTitle and ErrorMessage that you want to show to
+                    // the user using ViewBag. The Error view retrieves this data
+                    // from the ViewBag and displays to the user.
+                    ViewBag.ErrorTitle = $"{model.UnitType} Unit is in use";
+                    ViewBag.ErrorMessage = $"{model.UnitType} unit cannot be deleted as there are Items in this unit. If you want to delete this unit type, please remove the items from the unit and then try to delete";
+                    return View("Error");
+                }
 
             }
             else
                 return NotFound("Record does not exist againt Give Id");
             return RedirectToAction("Index");
         }
+
+
 
 
     }
