@@ -39,6 +39,13 @@ namespace EFTask.Controllers
             _Logger = logger;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> AccessDenied()
+        {
+            return View();
+
+        }
         //ManageUserClaims
         [HttpGet]
         public async Task<IActionResult> ManageUserClaims(string UserId)
@@ -207,6 +214,8 @@ namespace EFTask.Controllers
             var user = await _UserManager.FindByIdAsync(Id);
             if (user is not null)
             {
+                try 
+                { 
                 var result = await _UserManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
@@ -218,6 +227,18 @@ namespace EFTask.Controllers
                 }
                 return RedirectToAction("UsersList");
             }
+                catch (DbUpdateException ex)
+            {
+                //Log the exception to a file.
+                _Logger.LogError($"Exception Occured : {ex}");
+                // Pass the ErrorTitle and ErrorMessage that you want to show to
+                // the user using ViewBag. The Error view retrieves this data
+                // from the ViewBag and displays to the user.
+                ViewBag.ErrorTitle = $"{user.UserName} User is in use";
+                ViewBag.ErrorMessage = $"{user.UserName} User cannot be deleted as there are roles in this user. If you want to delete this User, please remove the role type from the user and then try to delete";
+                return View("Error");
+            }
+        }
             else
             {
                 ViewBag.ErrorMessage = $"User With Id = {Id} is not found";
@@ -365,7 +386,7 @@ namespace EFTask.Controllers
 
 
         [HttpGet]
-        //[Authorize(Policy = "EditRolePolicy")]
+       [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> EditRole(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
@@ -393,7 +414,7 @@ namespace EFTask.Controllers
 
         }
         [HttpPost]
-       // [Authorize(Policy = "EditRolePolicy")]
+      [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> EditRole(EditRoleViewModel model)
         {
             var role = await _roleManager.FindByIdAsync(model.Id);

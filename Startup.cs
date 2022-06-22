@@ -4,6 +4,7 @@ using EFTask.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -34,7 +35,11 @@ namespace EFTask
                 Options.Password.RequireNonAlphanumeric = false;
                 Options.Password.RequiredUniqueChars = 3;
 
-            }).AddEntityFrameworkStores<ApplicationDbContext>();
+                // Email Confrim  check 
+             //   Options.SignIn.RequireConfirmedEmail = true;
+
+
+            }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             // Same work the below line of code
             //services.Configure<IdentityOptions>(Options =>
             //{
@@ -42,7 +47,15 @@ namespace EFTask
             //    Options.Password.RequireNonAlphanumeric = false;
             //    Options.Password.RequiredUniqueChars = 3;
             //});
-
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    options.AccessDeniedPath = new PathString("/Administration/AccessDenied");
+            //});
+            //Change the default access denied path to custom path
+            services.ConfigureApplicationCookie(Options =>
+            {
+                Options.AccessDeniedPath = new PathString("/Administrator/AccessDenied");
+            });
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             // Appling  Authorize attribute on whole application globally

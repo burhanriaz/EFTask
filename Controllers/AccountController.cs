@@ -3,6 +3,7 @@ using EFTask.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace EFTask.Controllers
@@ -13,13 +14,91 @@ namespace EFTask.Controllers
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-
+        public ILogger<AdministratorController> _Logger { get; }
 
         public AccountController(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+                                  SignInManager<ApplicationUser> signInManager,
+                                  ILogger<AdministratorController> Logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _Logger = Logger;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null/* && await userManager.IsEmailConfirmedAsync(user)*/)
+                {
+
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    var passwordResetLink = Url.Action("ResetPassword", "Account",
+                            new { email = model.Email, token = token }, Request.Scheme);
+
+                    _Logger.Log(LogLevel.Warning, passwordResetLink);
+                    return View("ForgotPasswordConfirmation");
+                }
+                return View("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            // If password reset token or email is null, most likely the
+            // user tried to tamper the password reset link
+            if (token == null || email == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+
+                    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (result.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmation");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+
+
+                return View("ResetPasswordConfirmation");
+            }
+
+            return View(model);
         }
 
         [AllowAnonymous]
@@ -30,11 +109,11 @@ namespace EFTask.Controllers
         }
 
         // Remote validations  if i email is in use 
-        [AcceptVerbs("Get","Post")]
+        [AcceptVerbs("Get", "Post")]
         [AllowAnonymous]
         public async Task<IActionResult> IsEmailInUSe(string email)
         {
-           var result= await _userManager.FindByEmailAsync(email);
+            var result = await _userManager.FindByEmailAsync(email);
             if (result is null)
             {
                 return Json(true);
@@ -53,7 +132,8 @@ namespace EFTask.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
-                { Email = registerViewModel.Email,
+                {
+                    Email = registerViewModel.Email,
                     UserName = registerViewModel.Email,
                     Country = registerViewModel.Country
                 };
@@ -61,7 +141,7 @@ namespace EFTask.Controllers
 
                 if (result.Succeeded)
                 {
-                    if(_signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    if (_signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
                         return RedirectToAction("UsersList", "Administrator");
 
@@ -99,6 +179,12 @@ namespace EFTask.Controllers
         {
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user is not null && !(user.EmailConfirmed) && await _userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    ModelState.AddModelError("", "Email is not confrim yet");
+                    return View(model);
+                }
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.Rememberme, false);
                 if (result.Succeeded)
                 {
@@ -108,8 +194,8 @@ namespace EFTask.Controllers
                     if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
                     {
                         return Redirect(ReturnUrl);
-                      ///  return LocalRedirect(ReturnUrl);
-                     
+                        ///  return LocalRedirect(ReturnUrl);
+
                     }
                     else
                     {
@@ -120,12 +206,6 @@ namespace EFTask.Controllers
             }
             return View(model);
         }
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> AccessDenied()
-        {
-            return View();
 
-        }
     }
 }
