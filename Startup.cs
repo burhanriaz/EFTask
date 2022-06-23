@@ -1,6 +1,8 @@
 
 using EFTask.Data;
 using EFTask.Models;
+using EFTask.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +15,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace EFTask
 {
@@ -29,6 +32,9 @@ namespace EFTask
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSession();
+            services.AddTransient<ITokenService, TokenService>();
+
             services.AddIdentity<ApplicationUser, IdentityRole>(Options =>
             {
                 Options.Password.RequiredLength = 6;
@@ -37,8 +43,6 @@ namespace EFTask
 
                 // Email Confrim  check 
              //   Options.SignIn.RequireConfirmedEmail = true;
-
-
             }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             // Same work the below line of code
             //services.Configure<IdentityOptions>(Options =>
@@ -51,6 +55,21 @@ namespace EFTask
             //{
             //    options.AccessDeniedPath = new PathString("/Administration/AccessDenied");
             //});
+          
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+            });
             //Change the default access denied path to custom path
             services.ConfigureApplicationCookie(Options =>
             {
@@ -100,6 +119,16 @@ namespace EFTask
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+            app.UseSession();
+            app.Use(async (context, next) =>
+            {
+                var token = context.Session.GetString("Token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+                }
+                await next();
+            });
             app.UseStaticFiles();
 
 
