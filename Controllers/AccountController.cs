@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace EFTask.Controllers
@@ -185,6 +186,33 @@ namespace EFTask.Controllers
             // await _signInManager.Logger.Log()
             return View();
         }
+        [HttpPost("/api/Account/Login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody]LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                IActionResult response = Unauthorized();
+            
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.Rememberme, false);
+                if (result.Succeeded)
+                {
+                    generatedToken = _tokenService.BuildToken(_config["Jwt:Key"].ToString(), _config["Jwt:Issuer"].ToString(), user);
+                    if (generatedToken != null)
+                    {
+                        HttpContext.Session.SetString("Token", generatedToken);                              
+                            return RedirectToAction("Index", "Item");
+                        
+                    }
+                    ModelState.AddModelError(string.Empty, "Session Expire");
+
+                }
+                ModelState.AddModelError(string.Empty, "Invalid login Atempt");
+            }
+            return View(model);
+        }
+        ///////////////////////////////
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string ReturnUrl)
@@ -192,20 +220,17 @@ namespace EFTask.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                IActionResult response = Unauthorized();
                 //if (user is not null && !(user.EmailConfirmed) && await _userManager.CheckPasswordAsync(user, model.Password))
                 //{
                 //    ModelState.AddModelError("", "Email is not confrim yet");
                 //    return View(model);
                 //}
+
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.Rememberme, false);
                 if (result.Succeeded)
                 {
-                    generatedToken = _tokenService.BuildToken(_config["Jwt:Key"].ToString(), _config["Jwt:Issuer"].ToString(), user);
-                    if (generatedToken != null)
+                  if (ReturnUrl == null)
                     {
-                        HttpContext.Session.SetString("Token", generatedToken);
-                        //Url.IsLocalUrl(returnurl) 
                         // return localRedirect(Returnurl) 
                         //Same working
                         if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
@@ -218,13 +243,14 @@ namespace EFTask.Controllers
                             return RedirectToAction("Index", "Item");
                         }
                     }
-                    ModelState.AddModelError(string.Empty, "Session Expire");
+                    // ModelState.AddModelError(string.Empty, "Session Expire");
+                    Url.IsLocalUrl(ReturnUrl);
+
 
                 }
                 ModelState.AddModelError(string.Empty, "Invalid login Atempt");
             }
             return View(model);
         }
-
     }
 }

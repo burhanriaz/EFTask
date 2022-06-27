@@ -2,6 +2,7 @@
 using EFTask.Extentions;
 using EFTask.Models;
 using EFTask.Models.ViewModel;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,7 +14,10 @@ using System.Threading.Tasks;
 
 namespace EFTask.Controllers
 {
-   // [Authorize]
+    // [Authorize]
+     [Authorize]
+
+   // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ItemController : Controller
     {
         private readonly ApplicationDbContext _dbContext;

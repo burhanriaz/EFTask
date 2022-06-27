@@ -11,7 +11,7 @@ namespace EFTask.Repository
 {
     public class TokenService : ITokenService
     {
-        private const double EXPIRY_DURATION_MINUTES = 30;
+        private const double EXPIRY_DURATION_MINUTES = 10;
 
         public string BuildToken(string key, string issuer, ApplicationUser user)
         {
@@ -25,7 +25,7 @@ namespace EFTask.Repository
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
             var tokenDescriptor = new JwtSecurityToken(issuer, issuer, claims,
-                expires: DateTime.Now.AddMinutes(EXPIRY_DURATION_MINUTES), signingCredentials: credentials);
+                expires: DateTime.Now.AddSeconds(EXPIRY_DURATION_MINUTES), signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
         public bool ValidateToken(string key, string issuer, string audience, string token)
