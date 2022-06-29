@@ -81,6 +81,16 @@ namespace EFTask.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
+            // Eagerloading 
+            var EagerloadingOrder = await _dbContext.Orders.Include(o => o.OrderItem).ToListAsync();
+
+            // Explicit Loading
+            var OrderId = 12;
+            var odr = _dbContext.Orders.FirstOrDefault(a => a.OrderId == OrderId);
+            _dbContext.Entry(odr).Collection(o => o.OrderItem).Load();// load collections
+         //   _dbContext.Entry(odr).Reference(s => s.OrderItem).Load(); //  load single navigation property
+
+            // Lazy loading 
             var orders = await _dbContext.Orders.ToListAsync();
 
 

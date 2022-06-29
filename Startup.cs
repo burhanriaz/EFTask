@@ -1,6 +1,7 @@
 
 using EFTask.Data;
 using EFTask.Models;
+using EFTask.Models.Custom_Bind_AppSetting;
 using EFTask.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,7 +38,11 @@ namespace EFTask
         {
             services.AddSession();
             services.AddTransient<ITokenService, TokenService>();
+            /////////
+            services.AddOptions();
+            services.Configure<MySettings>(Configuration.GetSection(MySettings.SectionName));
 
+            
             services.AddIdentity<ApplicationUser, IdentityRole>(Options =>
             {
                 Options.Password.RequiredLength = 6;
@@ -50,7 +55,7 @@ namespace EFTask
             ////////////////////////////////////////////////////////////////////////////
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = "JWT_OR_COOKIE";
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = "JWT_OR_COOKIE";
             })
                 .AddCookie(options =>
@@ -142,7 +147,9 @@ namespace EFTask
                 //we can also add multli role in policy 
                 // options.AddPolicy("AdminRolePolicy", policy => policy.RequireRole("Admin","User","Employee"));
             });
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectin")));
+
+            // Enable lazy loading using UseLazy loading Proxies and install package 
+            services.AddDbContext<ApplicationDbContext>(options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("DefaultConnectin")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

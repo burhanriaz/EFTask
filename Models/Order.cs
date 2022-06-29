@@ -11,6 +11,6 @@ namespace EFTask.Models
         [Required(ErrorMessage = "Provide Order Name")]
         public string OrderName { get; set; }
         public decimal TotalPrice { get; set; }
-        public ICollection<OrderedItem> OrderItem { get; set; } /*= new HashSet<OrderedItem>();*/
+        public virtual ICollection<OrderedItem> OrderItem { get; set; } /*= new HashSet<OrderedItem>();*/
     }
 }

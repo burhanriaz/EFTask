@@ -13,7 +13,7 @@ namespace EFTask.Models
         [Required(ErrorMessage = "Provide Price")]
         public decimal Price { get; set; } 
 
-        public  ICollection<UnitItem> UnitItems { get;  set; }=new HashSet<UnitItem>();
+        public virtual ICollection<UnitItem> UnitItems { get;  set; }=new HashSet<UnitItem>();
         public virtual ICollection<OrderedItem> OrderedItems { get; set; } = new List<OrderedItem>();
 
     }

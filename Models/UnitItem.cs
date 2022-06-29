@@ -5,9 +5,11 @@ namespace EFTask.Models
 {
     public class UnitItem
     {
-        public Item  Item { get; set; }
+        // by using Virtual key word enable lazy loading 
+        public virtual Item Item { get; set; }
         public int ItemId { get; set; }
-        public  Unit Unit { get; set; }
+
+        public virtual Unit Unit { get; set; }
         public int UnitId { get; set; }
 
     }

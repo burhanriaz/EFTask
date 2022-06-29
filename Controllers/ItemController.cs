@@ -38,14 +38,12 @@ namespace EFTask.Controllers
             ViewData["ItemNameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "ItemName_desc" : "";
             ViewData["PriceSortParm"] = sortOrder == "Price" ? "Price_desc" : "Price";
             ViewData["CurrentFilter"] = searchString;
-
            
-
-            //var item = _dbContext.Items.Include(p => p.UnitItems)
-            // //.Where(p => p.ItemId == y=>y.uni).FirstOrDefault();
-            //var o = await _dbContext.Items.Include(x => x.UnitItems).ThenInclude(y => y.Unit).ToListAsync();
-            //var item = await _dbContext.Items.Include(x => x.UnitItems).ThenInclude(y => y.Unit).ToListAsync();
-            var xs = new ItemViewModel();
+        //var item = _dbContext.Items.Include(p => p.UnitItems)
+        // //.Where(p => p.ItemId == y=>y.uni).FirstOrDefault();
+        //var o = await _dbContext.Items.Include(x => x.UnitItems).ThenInclude(y => y.Unit).ToListAsync();
+        //var item = await _dbContext.Items.Include(x => x.UnitItems).ThenInclude(y => y.Unit).ToListAsync();
+        var xs = new ItemViewModel();
             var items = (from item in _dbContext.Items
 
                          join ItemUnit in _dbContext.UnitItems on item.ItemId equals ItemUnit.ItemId
